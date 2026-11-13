@@ -22,4 +22,23 @@ Tâche autorisée : reprendre la base fournie dans `Travailler IA.zip` sur une b
 2. **Changement de joueur : écart à clarifier.** Le code change le joueur avant de vérifier la victoire, même sur un coup terminal. Le tableau du contexte d'origine et le règlement situent ce changement après cette vérification. Ne pas trancher sans validation.
 3. **Livrables manquants :** interface `jeu.py`, recette, questions, échecs et journaux individuels. Les 21 tests automatisés ne remplacent pas `RECETTE.md` ; ne pas antidater les attentes ni inventer l'historique de développement.
 
-Prochaine tâche proposée : traiter le défaut des règles globales avec un cas de vérification ciblé, après validation. Avant toute fusion dans `main`, accord du groupe et vérification des points bloquants.
+Avant toute fusion dans `main`, accord du groupe et vérification des points bloquants. Le périmètre du problème de règles globales est précisé ci-dessous.
+
+## 2026-11-13 — Diagnostic de l'isolation des parties
+
+Correction autorisée par l'utilisateur ; diagnostic réalisé, puis périmètre recentré à sa demande sur les exigences des PDF. Moteur inchangé.
+
+- Essai local de `test_isolation.py` : conservation d'une victoire par carré après un rejeu standard, et conservation des coups autorisés lorsque des parties de modes différents se succèdent.
+- `python -B -m unittest test_isolation -v` : **2 tests, 2 échecs**, reproduisant le défaut attendu. Le moteur, les règles et les tests existants n'ont pas été modifiés.
+- Après `[0,0]`, les deux modes produisent les mêmes valeurs dans les sept champs actuels, mais seul le mode augmenté autorise le retrait `-1`. Les valeurs de l'état ne suffisent donc pas à déterminer son mode.
+- Relecture du PDF de séance 2, annexe A : les noms, paramètres et la forme de l'état ne changent pas. Aucun ajout de métadonnée à l'état n'est réalisé.
+- Les PDF n'exigent pas explicitement la coexistence de parties utilisant des modes différents. Les deux tests ajoutaient cette exigence ; le fichier expérimental a donc été retiré après la demande de suivre uniquement les consignes du professeur. Leurs résultats ci-dessus restent conservés comme diagnostic, pas comme tests du contrat imposé.
+- Limite actuelle, non corrigée : un seul ensemble de règles actif dans le moteur. Pour consulter ou poursuivre une ancienne partie après un changement de mode, réactiver son ensemble de règles avec `activer_regles(...)`. Ce fonctionnement décrit le code existant ; ce n'est pas une consigne du professeur.
+- Ne pas annoncer une isolation des parties ni une conformité complète. Le socle 16/16 et les règles 21/21 ont été vérifiés lors de l'intégration. La suite du travail doit porter sur la recette et la conformité au règlement, après validation de l'utilisateur.
+
+## 2026-11-13 — Mise en commun sur main
+
+- L'utilisateur autorise explicitement l'intégration et la publication de la base commune dans `main`.
+- Après récupération distante, `main` et les quatre branches personnelles (`adnane`, `adam`, `Rayhan`, `valentin`) pointent sur `b16585f` ; aucune divergence distante avec la base de l'intégration. Les changements locaux non publiés des autres membres ne sont pas visibles ici.
+- Publication prévue par avance rapide, sans réécriture d'historique ni modification des branches personnelles. Le README indique comment chacun intègre `origin/main` sur sa branche ; son encodage a été converti d'UTF-16 en UTF-8.
+- Derniers ajustements : documentation uniquement. Le moteur, les règles et les deux suites restent identiques aux fichiers vérifiés à 16/16 et 21/21 lors de l'intégration.

@@ -33,7 +33,7 @@ L'état est un dictionnaire : `colonnes`, `lignes`, `grille` (listes de lignes, 
 
 ## Branchement existant (archive du groupe)
 - `regles.py` expose `REGLES`, liste de dictionnaires de fonctions : `avant_coup(etat, coups)` renvoie les coups autorisés ; `pendant_coup(etat, coup)` un nouvel état ou `None` ; `apres_coup(etat, joueur)` les avis `gagne`/`perd` ; `fin_de_tour(etat)` un état ; `nul(etat)` `True`, `False` ou `None`.
-- `activer_regles(regles)` définit la variable globale `REGLES_ACTIVES`. `rejouer(coups, regles=None)` active les règles fournies (aucune par défaut). Les fonctions imposées conservent leurs signatures. Cette activation globale présente un problème connu : voir `SUIVI.md`.
+- `activer_regles(regles)` définit la variable globale `REGLES_ACTIVES`. `rejouer(coups, regles=None)` active les règles fournies (aucune par défaut). Un seul ensemble est actif : après un changement de mode, réactiver les règles d'une ancienne partie avant de la consulter ou de la poursuivre. Cette limite est documentée dans `SUIVI.md` ; ne pas prétendre que les parties sont isolées. Ne pas ajouter de champ à l'état pour gérer plusieurs modes simultanés, exigence absente des PDF.
 - Le code change actuellement le joueur avant la vérification de victoire, y compris au dernier coup ; le règlement situe ce changement en fin de tour. Cet écart reste à clarifier, pas à modifier sans accord.
 
 ## État vérifié et reprise
