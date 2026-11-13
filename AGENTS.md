@@ -2,9 +2,9 @@
 
 ## Contexte et sources
 - Projet universitaire : Puissance 4 en Python, interface terminal, cinq règles originales. Le professeur évalue surtout la précision des spécifications et leur vérification.
-- Fin de séance 2 ; séance 3 non commencée. Codex est l'agent principal, Claude Code prend le relais si nécessaire. L'utilisation de Codex est autorisée par le professeur selon l'utilisateur.
+- Base de fin de séance 2 récupérée sur le PC d'un membre du groupe : elle contient déjà les cinq règles codées. Codex est l'agent principal, Claude Code prend le relais si nécessaire. Son utilisation est autorisée par le professeur selon l'utilisateur.
 - Consignes de référence : les PDF « Puissance 4 augmenté — Séance 1.pdf », « Puissance 4 augmenté — Séance 2.pdf » et « Puissance 4 augmenté — Séance 3.pdf ».
-- Règlement de référence : `REGLEMENT-v1 (1).md` (nom réel). Le lire avant toute tâche liée aux règles ; ne pas le recopier ici ni inventer les informations manquantes.
+- Règlement de référence : `REGLEMENT-v1.md`. Le lire avant toute tâche liée aux règles ; ne pas le recopier ici ni inventer les informations manquantes.
 
 ## Méthode demandée par l'utilisateur
 - Une tâche à la fois. Avant chaque modification, expliquer brièvement le changement prévu et attendre la validation ; rester dans le périmètre approuvé.
@@ -31,11 +31,17 @@ L'état est un dictionnaire : `colonnes`, `lignes`, `grille` (listes de lignes, 
 - Une règle reçoit l'état sans le modifier : autorisation avant le coup, nouvel état pendant le coup ou en fin de tour, indications de victoire/défaite après le coup. Les deux joueurs sont évalués selon le tableau de priorités du règlement.
 - Aucune règle à usage limité ; le calendrier des jetons gris se déduit de `len(coups)`. Les retraits sont encodés `-(colonne+1)` dans l'historique. La même suite de coups doit reproduire le même état.
 
+## Branchement existant (archive du groupe)
+- `regles.py` expose `REGLES`, liste de dictionnaires de fonctions : `avant_coup(etat, coups)` renvoie les coups autorisés ; `pendant_coup(etat, coup)` un nouvel état ou `None` ; `apres_coup(etat, joueur)` les avis `gagne`/`perd` ; `fin_de_tour(etat)` un état ; `nul(etat)` `True`, `False` ou `None`.
+- `activer_regles(regles)` définit la variable globale `REGLES_ACTIVES`. `rejouer(coups, regles=None)` active les règles fournies (aucune par défaut). Les fonctions imposées conservent leurs signatures. Cette activation globale présente un problème connu : voir `SUIVI.md`.
+- Le code change actuellement le joueur avant la vérification de victoire, y compris au dernier coup ; le règlement situe ce changement en fin de tour. Cet écart reste à clarifier, pas à modifier sans accord.
+
 ## État vérifié et reprise
-- `moteur.py` contient le jeu standard ; `test_socle.py` a passé 16/16 tests lors de l'analyse précédente. Ce résultat ne valide pas les règles maison et doit être revérifié après une modification pertinente.
-- Le règlement décrit les points d'accroche, mais leur branchement n'est pas développé ; `rejouer()` ignore actuellement son argument `regles`.
-- À la création de ce document : `regles.py`, `jeu.py`, `RECETTE.md`, `QUESTIONS.md`, `ECHECS.md` et `sessions/` sont absents. La validation professorale des règles et l'attribution nominative des lots ne sont pas attestées dans les fichiers.
+- `moteur.py`, `regles.py` et `test_reglement.py` proviennent de l'archive `Travailler IA.zip`. Le règlement a seulement été renommé ; `test_socle.py` est inchangé.
+- Les tests de l'archive ont réussi : 16/16 pour le socle, 21/21 pour les règles. Commande complémentaire : `python -B test_reglement.py`. Ces résultats ne prouvent pas la conformité complète ; les limites et vérifications d'intégration sont dans `SUIVI.md`.
+- `jeu.py`, `RECETTE.md`, `QUESTIONS.md`, `ECHECS.md` et `sessions/` restent absents. La validation professorale des règles et l'attribution nominative des lots ne sont pas attestées dans les fichiers.
 - Avant de développer une règle : vérifier sa validation par l'enseignant et écrire ses résultats attendus dans `RECETTE.md`. Une règle, une vérification, puis consignation de l'observé. Objectif final : 20 à 30 cas, au moins deux par règle et un par interaction déclarée, avec les cas limites.
 - Documenter les décisions et les résultats réellement obtenus au fil du travail. `QUESTIONS.md` reçoit les réponses aux questions du professeur ; `ECHECS.md` décrit trois échecs réels de l'IA (demande, résultat, détection, correction de la demande). Ne rien fabriquer ni antidater.
 - Conserver les journaux bruts individuels dans `sessions/<prénom>/`, sans retouche. Ne pas supposer qu'un agent les y exporte automatiquement. Pour chaque tâche autorisée, laisser une trace concise des changements, tests et points ouverts afin de permettre la reprise.
-- La prochaine tâche reste soumise à validation de l'utilisateur ; ne pas commencer la séance 3 automatiquement.
+- Les règles étaient déjà codées dans l'archive : ne pas présenter une recette rédigée ensuite comme antérieure au code. Conserver les preuves existantes et documenter honnêtement la suite.
+- La prochaine tâche reste soumise à validation de l'utilisateur. Lire `SUIVI.md` pour reprendre ; ne pas corriger les problèmes connus ou poursuivre la séance automatiquement.
