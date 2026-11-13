@@ -59,3 +59,12 @@ Correction autorisée par l'utilisateur ; diagnostic réalisé, puis périmètre
 - Observations datées et verdicts renseignés dans le cahier sans modifier les attentes. Aucun échec inventé. Les résultats sont ceux des appels Python, pas d'une partie jouée dans une interface.
 - La couverture reste incomplète : les interactions manquantes et l'écart de changement de joueur terminal restent signalés. La réussite de cette campagne ne les valide pas.
 - `AGENTS.md` actualisé ; responsable du cahier : Adnane BOUCHEHIT. Modifications documentaires locales, non publiées à ce stade.
+
+## 2026-11-13 — Lot 3 : premier affichage terminal
+
+- Travail sur `adam`, au commit `e9c8cd9`, identique à la référence `origin/main` récupérée ; dossier initialement propre. Aucune fusion ni publication.
+- PDF de séance 3 fourni par l'utilisateur et lu visuellement (5 pages). Il demande une interface terminal utilisant le contrat, les messages de déclenchement et une partie entière au clavier. Le PDF de séance 2 reste non retrouvé.
+- Première étape réalisée : `jeu.py`, fonction `afficher_grille(etat)`, colonnes numérotées, ligne 0 en haut, symboles X/O/G et point pour une case vide, légende, joueur et tour. Un état fini est signalé sans annoncer un prochain joueur. `python -B jeu.py` affiche seulement la grille initiale : la boucle de saisie reste à réaliser.
+- Vérifications : socle 16/16, règlement 21/21 ; contrôle en mémoire de quatre états (vide, empilement X/O, jeton gris après 15 coups, victoire par carré), orientation et absence de mutation. Une assertion du script de contrôle avait une ligne du bas attendue erronée ; corrigée après relecture de la suite, puis contrôle réussi, sans changement du moteur.
+- Moteur, règles, règlement et recette inchangés. Les 26 cas de recette n'ont pas été réexécutés.
+- Point ouvert : le contrat ne fournit pas de journal des déclenchements. Proposition à discuter avec le groupe : une fonction de diagnostic côté moteur/règles qui expose les événements, sans changer les signatures ni les champs imposés. Aucun ajout de contrat ni duplication des règles dans l'interface à cette étape.
