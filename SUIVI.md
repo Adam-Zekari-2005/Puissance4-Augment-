@@ -42,3 +42,20 @@ Correction autorisée par l'utilisateur ; diagnostic réalisé, puis périmètre
 - Après récupération distante, `main` et les quatre branches personnelles (`adnane`, `adam`, `Rayhan`, `valentin`) pointent sur `b16585f` ; aucune divergence distante avec la base de l'intégration. Les changements locaux non publiés des autres membres ne sont pas visibles ici.
 - Publication prévue par avance rapide, sans réécriture d'historique ni modification des branches personnelles. Le README indique comment chacun intègre `origin/main` sur sa branche ; son encodage a été converti d'UTF-16 en UTF-8.
 - Derniers ajustements : documentation uniquement. Le moteur, les règles et les deux suites restent identiques aux fichiers vérifiés à 16/16 et 21/21 lors de l'intégration.
+
+## 2026-11-13 — Première version du cahier de recette
+
+- Tâche autorisée sur `adnane` : créer `RECETTE.md` avec résultats attendus, sans lancer la campagne ni remplir les observations.
+- 26 cas issus du règlement et des tests existants, avec quelques préfixes pour vérifier les non-déclenchements. Les suites longues sont recopiées explicitement ; les attentes ne sont pas déduites d'une nouvelle exécution du moteur.
+- Chronologie indiquée : le code et les tests de l'archive précèdent ce cahier. Observé et verdict laissés vides. Les interactions et cas limites non couverts sont listés, sans annoncer une couverture complète.
+- Contexte actualisé dans `AGENTS.md`. Aucun changement de code, des tests ou du règlement ; aucun lancement de la nouvelle campagne. Les 16 tests du socle ont été revérifiés avec succès juste avant cette tâche, à la demande de l'utilisateur.
+- Prochaine étape, après accord : relire les attentes avec le groupe puis vérifier les cas et renseigner les observations réelles.
+
+## 2026-11-13 — Exécution des 26 cas de recette
+
+- Campagne autorisée par l'utilisateur sur `adnane`, réalisée par Codex avec Python Windows et `-B`, au moyen d'un script exécuté en mémoire. Aucun changement du moteur, des règles ou des tests existants.
+- Exécution des 26 procédures de `RECETTE.md`, avec comparaison aux attentes préalablement écrites : **26 conformes, 0 échec**. Les vérifications incluent les coordonnées des jetons, les motifs, les refus avec état inchangé, les coups disponibles, les compteurs, le passage du 83e au 84e coup, l'immutabilité et l'égalité des états rejoués.
+- Le cas 21 a également contrôlé les motifs des deux joueurs : chacun possède un alignement maximal de quatre, aucun de cinq ; résultat nul. Cas 22 : seuls les retraits `[-3,-5,-6]` sont possibles sur la grille pleine.
+- Observations datées et verdicts renseignés dans le cahier sans modifier les attentes. Aucun échec inventé. Les résultats sont ceux des appels Python, pas d'une partie jouée dans une interface.
+- La couverture reste incomplète : les interactions manquantes et l'écart de changement de joueur terminal restent signalés. La réussite de cette campagne ne les valide pas.
+- `AGENTS.md` actualisé ; responsable du cahier : Adnane BOUCHEHIT. Modifications documentaires locales, non publiées à ce stade.
