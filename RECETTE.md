@@ -58,6 +58,15 @@ Après correction autorisée, nouvelle vérification le 16/11/2026 : joueur X co
 
 Ce contrôle s'ajoute aux 26 cas historiques ; la campagne complète des 26 cas n'a pas été réexécutée. Les 16 tests du socle, les 21 tests des règles et les trois tests complémentaires de `test_fin_partie.py` passent.
 
+## Cas d'interaction ajoutés
+
+Attendus écrits à partir de `REGLEMENT-v1.md` (Règle 3 cas limite, interaction « 3 et 4 », priorité 2 de `APRES_COUP`), avant toute exécution du cas.
+
+| N° | Règle / objectif | Coups joués / procédure | Attendu | Observé | ✓/✗ | Écrit le |
+|---|---|---|---|---|---|---|
+| 28 | R3 + R4 : carré et cinq alignés au même coup | `[2,0,3,1,0,4,1,5,3,6,4,5,2]` ; contrôler aussi le préfixe de 12 coups | Après 12 coups : ligne 4 `X X . X X O .`, ligne 5 `O O X X O O O`, aucun gris, partie en cours. Après le 13e coup (X en `[4][2]`) : cinq X en ligne 4 (colonnes 0–4) et carré X `[4][2]`, `[4][3]`, `[5][2]`, `[5][3]`. R4 passe avant : X perd, **O gagne**, `fini=True`, joueur X conservé, historique de 13 coups. | 16/11/2026 : après 12 coups, ligne 4 `X X . X X O .`, ligne 5 `O O X X O O O`, aucun gris, gagnant None, fini=False, joueur X. Après 13 coups : ligne 4 `X X X X X O .` ; gagnant O, fini=True, joueur X, 13 coups. Préfixe inchangé ; `rejouer` donne le même état. | ✓ | 16/11/2026 |
+| 29 | R3 + R5 : carré et sandwich au même coup | `[2,0,3,1,4,5,0,2,1,6,3,5,4]` ; contrôler aussi le préfixe de 12 coups | Après 12 coups : ligne 4 `X X O X . O .`, ligne 5 `O O X X X O O`, aucun gris, partie en cours. Après le 13e coup (X en `[4][4]`) : sandwich X en ligne 4 (`X X O X X`, colonnes 0–4) et carré X `[4][3]`, `[4][4]`, `[5][3]`, `[5][4]` ; aucun alignement de cinq. Pas de conflit (priorité 5) : **X gagne**, `fini=True`, joueur X conservé, historique de 13 coups. | 16/11/2026 : après 12 coups, ligne 4 `X X O X . O .`, ligne 5 `O O X X X O O`, aucun gris, gagnant None, fini=False, joueur X. Après 13 coups : ligne 4 `X X O X X O .` ; gagnant X, fini=True, joueur X, 13 coups. Préfixe inchangé ; `rejouer` donne le même état. | ✓ | 16/11/2026 |
+
 ## Suites longues reprises des tests existants
 
 ```python

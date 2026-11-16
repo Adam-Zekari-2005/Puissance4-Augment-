@@ -1,5 +1,17 @@
 # Suivi du projet
 
+## 2026-11-16 — Recette, cas 28 (R3 + R4)
+
+- Réalisé par Claude Code sur `adnane`, à la demande de l'utilisateur. Avant : `git fetch origin`, branche à jour avec `origin/adnane` (`9f8556d`) ; socle 16/16, règles 21/21, `test_fin_partie` 3/3.
+- Incident préalable : `RECETTE.md` avait été modifié localement par erreur (section du cas 27 supprimée). Restauré avec `git restore RECETTE.md` après accord de l'utilisateur.
+- Cas 28 ajouté dans `RECETTE.md` (section « Cas d'interaction ajoutés ») : un coup forme à la fois un carré et cinq alignés pour X. Attendu écrit depuis le règlement v1 (Règle 3 cas limite, interaction « 3 et 4 », priorité 2), suite construite à la main, avant exécution.
+- Exécution en mémoire avec Python et `-B` : **conforme** (O gagne, fini=True, joueur X conservé, 13 coups ; préfixe sans gagnant ni gris ; immutabilité et rejeu identiques). Moteur, règles, tests et règlement inchangés. Aucun commit ni push.
+- Cas 29 ajouté (R3 + R5 : carré et sandwich au même coup, priorité 5), attendu écrit avant exécution puis vérifié : **conforme** (X gagne, fini=True, joueur X, 13 coups ; préfixe sans gagnant ni gris ; immutabilité et rejeu identiques).
+- Cas R4/R5 reporté : sandwich et cinq alignés créés par un même jeton imposent un alignement de cinq en diagonale (impossible en horizontal sur 7 colonnes avec le sandwich, impossible en vertical sans quatre alignés préalables) ; suite plus longue à construire.
+- Couverture encore ouverte : priorité R4/R5, deux défaites simultanées après Pop out, interactions des gris et cas limites listés dans `RECETTE.md`.
+- Vérification de `jeu.py` (point d'étape séance 3 : partie entière au clavier), par deux lancements avec entrées simulées, sans modification de fichier. Partie 1 : `abc`, `9`, `-1` redemandés (saisie incorrecte, coup interdit), puis suite du cas 28 : messages « Trop aligné », « Carré », priorité de la défaite, « Le joueur O gagne ! ». Partie 2 : suite `L84` complète (84 coups, Pop out et gris annoncés, gris affichés `G`), aucun refus, « Limite de 84 coups atteinte : match nul » puis « Match nul. ». Code retour 0, aucun plantage.
+- Branche `Knoce` (Rayhan) observée après `git fetch` : essais personnels selon l'utilisateur, non intégrés ; Rayhan reprendra la version de `main`.
+
 ## 2026-11-16 — Correction du joueur terminal
 
 - Correction autorisée : `jouer` passe la main à `FIN_DE_TOUR` uniquement après la vérification des victoires/défaites. `_resultat_victoire` identifie le dernier joueur par la parité de l'historique, valable avant et après le passage de main puisque X commence et chaque action acceptée compte un coup.
