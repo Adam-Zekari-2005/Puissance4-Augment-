@@ -128,3 +128,59 @@ R5_SANDWICH = {"nom": "R5 Sandwich", "apres_coup": _r5_apres_coup}
 
 # Ordre d'application a l'interieur d'un meme hook : R1 -> R5.
 REGLES = [R1_POP_OUT, R2_JETON_GRIS, R3_CARRE, R4_TROP_ALIGNE, R5_SANDWICH]
+
+
+def decrire_evenements(avant, coup, apres):
+    """Décrit un coup accepté avec les cinq règles, sans modifier les états.
+
+    Les motifs sont signalés comme constats. Le résultat final reste celui
+    du moteur, notamment lorsque plusieurs victoires ou défaites coexistent.
+    """
+    messages = []
+    if coup < 0:
+        messages.append(
+            f"Pop out : {avant['joueur']} retire son jeton en colonne {-coup - 1}."
+        )
+
+    defaites = []
+    victoires = []
+    for joueur in (avant["joueur"], _adversaire(avant["joueur"])):
+        if _r4_apres_coup(apres, joueur)["perd"]:
+            defaites.append(joueur)
+            messages.append(f"Trop aligné : {joueur} possède au moins cinq jetons alignés.")
+        if _r3_apres_coup(apres, joueur)["gagne"]:
+            messages.append(f"Carré : {joueur} forme un carré de quatre jetons.")
+            victoires.append(joueur)
+        if _r5_apres_coup(apres, joueur)["gagne"]:
+            messages.append(f"Sandwich horizontal : motif complété pour {joueur}.")
+            victoires.append(joueur)
+        if plus_long_alignement(apres["grille"], joueur) == 4:
+            victoires.append(joueur)
+
+    if defaites:
+        if len(defaites) == 2:
+            messages.append("Les deux joueurs ont cinq jetons alignés ou plus : match nul.")
+        else:
+            messages.append(
+                f"La défaite de {defaites[0]} pour trop d'alignement est prioritaire."
+            )
+        return messages
+    if victoires:
+        if len(set(victoires)) == 2:
+            messages.append("Les deux joueurs ont un motif gagnant : match nul.")
+        return messages
+
+    # Un Pop out déplace les gris mais ne change pas leur nombre par colonne.
+    for colonne in range(apres["colonnes"]):
+        nombre_avant = sum(ligne[colonne] == "G" for ligne in avant["grille"])
+        nombre_apres = sum(ligne[colonne] == "G" for ligne in apres["grille"])
+        if nombre_apres > nombre_avant:
+            messages.append(f"Jeton gris : un jeton neutre tombe en colonne {colonne}.")
+
+    if _r1_nul(apres) is True:
+        limite = 2 * apres["colonnes"] * apres["lignes"]
+        if len(apres["coups"]) >= limite:
+            messages.append(f"Limite de {limite} coups atteinte : match nul.")
+        else:
+            messages.append("Grille pleine et aucun Pop out possible : match nul.")
+    return messages

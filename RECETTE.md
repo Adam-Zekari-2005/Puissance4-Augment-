@@ -46,6 +46,18 @@ Vérification par appels Python aux fonctions du moteur, sans interface utilisat
 | 25 | R1 : reproductibilité | `[0,0,-1,3,3,-4]`, par `rejouer` puis par appels successifs à `jouer`, mêmes règles actives | Les deux états complets sont égaux, dont grille, historique, joueur, tour et fin de partie. | 13/11/2026 : Égalité complète des deux dictionnaires après les six coups ; joueur X, tour 7, fini=False. | ✓ | 13/11/2026 |
 | 26 | R3 + fin de partie | `[0,6,1,6,0,5,1]`, puis tenter `3` | X a déjà gagné par carré : tout nouveau coup est refusé, état terminal inchangé. | 13/11/2026 : ValueError : coup illegal : 3 ; état terminal inchangé, gagnant X, fini=True. | ✓ | 13/11/2026 |
 
+## Cas complémentaire — arrêt avant le passage de main
+
+Ajouté le 16/11/2026, avant toute correction du moteur. Référence : `APRES_COUP` arrête la partie avant `FIN_DE_TOUR` dans le règlement v1.
+
+| N° | Procédure | Attendu | Observé | Verdict |
+|---|---|---|---|---|
+| 27 | Rejouer `[0,6,1,6,0,5]` avec `REGLES`, puis jouer `1`. | Avant : joueur X, partie en cours. Après : carré gagnant de X, `fini=True`, `joueur='X'` conservé ; historique de sept coups. | 16/11/2026 : avant, joueur X et aucun gagnant ; après, gagnant X et fini=True, mais joueur O. | Échec : passage de main prématuré. |
+
+Après correction autorisée, nouvelle vérification le 16/11/2026 : joueur X conservé, gagnant X, fini=True, historique de sept coups ; état précédent inchangé et rejeu identique. **Cas 27 conforme.** L'échec initial ci-dessus est conservé pour tracer le diagnostic.
+
+Ce contrôle s'ajoute aux 26 cas historiques ; la campagne complète des 26 cas n'a pas été réexécutée. Les 16 tests du socle, les 21 tests des règles et les trois tests complémentaires de `test_fin_partie.py` passent.
+
 ## Suites longues reprises des tests existants
 
 ```python
@@ -74,4 +86,4 @@ Cette première version contient 26 cas et au moins un déclenchement et un non-
 - Gris interrompant explicitement les motifs de R3/R4/R5, descente d'un gris après retrait ; absence de gris lorsqu'un coup multiple de 15 finit la partie ; trois colonnes cibles pleines.
 - Grille pleine sans Pop out possible ; motifs verticaux/diagonaux non gagnants pour R5 et centre gris.
 
-Compléter ou regrouper les cas avec le groupe pour respecter la couverture demandée (chaque interaction déclarée et chaque cas limite), tout en visant 20 à 30 cas. Ne pas considérer le nombre de lignes comme une preuve de couverture. L'ordre du changement de joueur au coup terminal reste à clarifier : voir `SUIVI.md`.
+Compléter ou regrouper les cas avec le groupe pour respecter la couverture demandée (chaque interaction déclarée et chaque cas limite), tout en visant 20 à 30 cas. Ne pas considérer le nombre de lignes comme une preuve de couverture. L'ordre du changement de joueur au coup terminal est corrigé et vérifié par le cas 27 : voir `SUIVI.md`.
