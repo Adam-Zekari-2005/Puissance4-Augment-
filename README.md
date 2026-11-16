@@ -28,4 +28,6 @@ python -B test_socle.py moteur
 python -B test_reglement.py
 ```
 
+Jouer : `python jeu.py` (cinq règles actives).
+
 Dernière vérification : **16/16** tests du socle et **21/21** tests des règles. Lire les limites dans `SUIVI.md`. Les changements personnels sont à relire et tester avant leur intégration dans `main`.

@@ -45,6 +45,13 @@ Vérification par appels Python aux fonctions du moteur, sans interface utilisat
 | 24 | R1 : immutabilité | Préparer `[0,0]`, garder une copie de l'état, puis jouer `-1` | L'ancien état garde X sous O et deux coups. Le nouvel état contient O seul en colonne 0 et l'historique `[0,0,-1]`. | 13/11/2026 : Ancien état égal à sa copie : X sous O, historique [0,0]. Nouvel état : O seul en colonne 0, historique [0,0,-1]. | ✓ | 13/11/2026 |
 | 25 | R1 : reproductibilité | `[0,0,-1,3,3,-4]`, par `rejouer` puis par appels successifs à `jouer`, mêmes règles actives | Les deux états complets sont égaux, dont grille, historique, joueur, tour et fin de partie. | 13/11/2026 : Égalité complète des deux dictionnaires après les six coups ; joueur X, tour 7, fini=False. | ✓ | 13/11/2026 |
 | 26 | R3 + fin de partie | `[0,6,1,6,0,5,1]`, puis tenter `3` | X a déjà gagné par carré : tout nouveau coup est refusé, état terminal inchangé. | 13/11/2026 : ValueError : coup illegal : 3 ; état terminal inchangé, gagnant X, fini=True. | ✓ | 13/11/2026 |
+| 27 | Fin de partie : joueur après un coup gagnant | `[0,6,1,6,0,5,1]` | X gagne par carré. Règlement v1, hook 4 : le passage de la main se fait à `FIN_DE_TOUR`, qui n'a lieu que si la partie continue ; donc `joueur` reste `X`. | 16/11/2026 : gagnant X, fini=True, mais `joueur='O'` : le moteur passe la main avant de vérifier la victoire. | ✗ | 16/11/2026 |
+| 28 | R2 + fin de partie : le 15e coup fait gagner | `[6,3,1,6,0,-4,0,6,6,2,5,-3,3,5,1]` | Le 15e coup donne à X un carré (colonnes 0–1, lignes 4–5) : X gagne ; partie finie, donc **aucun gris** n'est posé. | 16/11/2026 : carré X en lignes 4–5, colonnes 0–1 ; gagnant X, fini=True ; aucun G sur la grille. | ✓ | 16/11/2026 |
+| 29 | R1 + R4 : un Pop out donne 5 alignés à l'adversaire | `[3,4,3,2,5,0,-6,1,-4,3,-4]` | Le dernier coup est un Pop out de X (colonne 3) ; la pile descend et O a 5 jetons alignés en ligne 5. Priorité 3 : B perd, donc **X gagne**. | 16/11/2026 : ligne 5 = `O O O O O . .` ; plus long alignement O = 5, X = 0 ; gagnant X, fini=True. | ✓ | 16/11/2026 |
+| 30 | R3 + R4 : carré et 5 alignés pour le même joueur | `[1,0,1,1,5,1,-6,4,6,5,4,0,3,-5,5,5,4,2,2,5,3]` | Le dernier coup de X forme un carré (colonnes 3–4, lignes 4–5) et 5 X alignés en ligne 4. La Règle 4 passe avant : **X perd, O gagne**. | 16/11/2026 : ligne 4 = `O X X X X X .`, carré X colonnes 3–4 ; plus long alignement X = 5 ; gagnant O, fini=True. | ✓ | 16/11/2026 |
+| 31 | R2 : colonnes 1, 3 et 5 pleines au coup 45 | Suite de 45 coups ci-dessous (`P45`) ; comparer avec `P45[:44]` | Après le coup 45, les colonnes 1, 3 et 5 sont pleines : **aucun gris** n'est posé ; partie en cours, à O de jouer. | 16/11/2026 : après 44 et après 45 coups, 2 gris sur la grille (aucun nouveau) ; colonnes 1, 3, 5 pleines ; gagnant None, fini=False, joueur O. | ✓ | 16/11/2026 |
+| 32 | R5 : un motif vertical ne compte pas | `[0,1,0,0,0,1,0]` | Colonne 0, de bas en haut : `X X O X X`. Le sandwich n'est qu'horizontal : **pas de victoire**, partie en cours. | 16/11/2026 : colonne 0 de bas en haut X X O X X ; gagnant None, fini=False. | ✓ | 16/11/2026 |
+| 33 | R1 + R2 : un Pop out fait descendre un gris | `[1,0,0,0,0,0,0,6,6,6,6,6,6,2,2,3,-2]` | Le gris du coup 15 tombe en `[4][1]`, au-dessus du X. Au coup 17, X retire ce X : le gris descend en `[5][1]`, puis ne peut plus être retiré (`-2` absent des coups de O). | 16/11/2026 : G en [5][1], [4][1] vide ; coups possibles de O sans -2 ; partie en cours. | ✓ | 16/11/2026 |
 
 ## Suites longues reprises des tests existants
 
@@ -64,14 +71,22 @@ PLEINE = [4,0,0,6,4,3,0,3,2,1,0,0,3,1,3,2,0,2,3,2,5,3,2,4,2,
 L84 = S30 + [-4,-7,3,5,4,-6,-5,2,0,-3,3,2,-1,-3,2,2,6,3,-7,5,
              5,4,-3,-3,2,-5,-3,0,6,-1,-7,0,5,-1,2,5,4,5,-5,0,
              -3,2,6,-3,-7,-1,4,2,-5,-3,4,6,2,-7]
+
+P45 = [3,3,5,2,6,0,3,3,5,-3,-7,6,-4,-1,5,5,3,5,5,4,-6,5,2,1,3,0,6,2,3,1,
+       2,1,0,-7,1,2,-3,4,0,-4,-7,0,4,3,2]
 ```
+
+## Complément du 16/11/2026 (cas 27 à 33)
+
+Attendus rédigés d'après `REGLEMENT-v1.md`, puis observés par appels Python (`rejouer(coups, REGLES)`). Les suites longues (29 à 31) ont été trouvées par un script de recherche écrit à partir du règlement, pas à partir du code. Le cas 27 échoue : c'est l'écart du changement de joueur déjà signalé dans `SUIVI.md`, à trancher en séance 4 (règlement v2 d'abord, code ensuite). Le cahier compte maintenant 33 cas : le groupe peut regrouper des cas proches (24, 25 et 26 recoupent les tests du socle) pour revenir vers 30.
+
 
 ## Couverture à compléter
 
-Cette première version contient 26 cas et au moins un déclenchement et un non-déclenchement/refus pour chacune des cinq règles. Elle ne couvre pas encore toutes les interactions et tous les cas limites :
+Après le complément du 16/11 (33 cas), sont couverts en plus : R3/R4 (30), R1/R4 avec 5 alignés chez l'adversaire (29), le 15e coup gagnant sans gris (28), les trois colonnes cibles pleines (31), le sandwich vertical (32), la descente d'un gris après un retrait (33) et le joueur après un coup gagnant (27, en échec). Restent à couvrir :
 
-- Priorités R3/R4, R4/R5 et victoire simultanée R3/R5 ; deux défaites simultanées après Pop out.
-- Gris interrompant explicitement les motifs de R3/R4/R5, descente d'un gris après retrait ; absence de gris lorsqu'un coup multiple de 15 finit la partie ; trois colonnes cibles pleines.
-- Grille pleine sans Pop out possible ; motifs verticaux/diagonaux non gagnants pour R5 et centre gris.
+- R4/R5 et victoire simultanée R3/R5 ; deux défaites simultanées après Pop out.
+- Gris interrompant explicitement un motif (`P P G P P`, carré ou alignement coupé par un gris).
+- Grille pleine sans Pop out possible pour le joueur suivant (match nul) : aucune suite de partie réelle trouvée à ce jour.
 
 Compléter ou regrouper les cas avec le groupe pour respecter la couverture demandée (chaque interaction déclarée et chaque cas limite), tout en visant 20 à 30 cas. Ne pas considérer le nombre de lignes comme une preuve de couverture. L'ordre du changement de joueur au coup terminal reste à clarifier : voir `SUIVI.md`.

@@ -36,10 +36,18 @@ L'état est un dictionnaire : `colonnes`, `lignes`, `grille` (listes de lignes, 
 - `activer_regles(regles)` définit la variable globale `REGLES_ACTIVES`. `rejouer(coups, regles=None)` active les règles fournies (aucune par défaut). Un seul ensemble est actif : après un changement de mode, réactiver les règles d'une ancienne partie avant de la consulter ou de la poursuivre. Cette limite est documentée dans `SUIVI.md` ; ne pas prétendre que les parties sont isolées. Ne pas ajouter de champ à l'état pour gérer plusieurs modes simultanés, exigence absente des PDF.
 - Le code change actuellement le joueur avant la vérification de victoire, y compris au dernier coup ; le règlement situe ce changement en fin de tour. Cet écart reste à clarifier, pas à modifier sans accord.
 
+## Règle d'équipe : toujours les règles actives
+- Les règles actives sont une variable globale du moteur. Tout appel `rejouer(coups)` sans `REGLES` désactive les règles pour toute la suite, y compris pour une partie en cours. Toujours écrire `rejouer(coups, REGLES)` (scripts, recette, outils du lot 4) ; l'interface appelle `activer_regles(REGLES)` au démarrage.
+
+## Interface (lot 3, `jeu.py`)
+- `python jeu.py` : une partie complète au clavier, cinq règles actives. Saisie : `0` à `6` pour poser, `r0` à `r6` pour un Pop out (traduit en `-(c+1)`), `aide`, `q`.
+- L'interface ne connaît aucune règle : validation par `coups_possibles()`, exécution par `jouer()`, fin par `gagnant()` (jamais par `etat['joueur']`).
+- Les messages de déclenchement viennent de `regles.decrire_coup(avant, apres)`, qui réutilise les fonctions des règles sans rien modifier. Ne pas recoder une règle dans `jeu.py`.
+
 ## État vérifié et reprise
 - `moteur.py`, `regles.py` et `test_reglement.py` proviennent de l'archive `Travailler IA.zip`. Le règlement a seulement été renommé ; `test_socle.py` est inchangé.
 - Les tests de l'archive ont réussi : 16/16 pour le socle, 21/21 pour les règles. Commande complémentaire : `python -B test_reglement.py`. Ces résultats ne prouvent pas la conformité complète ; les limites et vérifications d'intégration sont dans `SUIVI.md`.
-- `RECETTE.md` contient 26 cas vérifiés par appels Python le 13/11/2026 : 26 conformes, observations renseignées, couverture des interactions encore à compléter. Adnane BOUCHEHIT est responsable du cahier selon sa demande. `jeu.py`, `QUESTIONS.md`, `ECHECS.md` et `sessions/` restent absents. La validation professorale des règles et l'attribution des autres lots ne sont pas attestées dans les fichiers.
+- `RECETTE.md` contient 33 cas : 26 vérifiés le 13/11/2026, 7 ajoutés et vérifiés le 16/11/2026 (le cas 27, joueur après un coup gagnant, est en échec). Adnane BOUCHEHIT est responsable du cahier selon sa demande. `QUESTIONS.md` et `ECHECS.md` existent sous forme de squelettes à remplir ; `sessions/<prénom>/` attend les journaux bruts de chacun. La validation professorale des règles et l'attribution des autres lots ne sont pas attestées dans les fichiers.
 - Avant de développer une règle : vérifier sa validation par l'enseignant et écrire ses résultats attendus dans `RECETTE.md`. Une règle, une vérification, puis consignation de l'observé. Objectif final : 20 à 30 cas, au moins deux par règle et un par interaction déclarée, avec les cas limites.
 - Documenter les décisions et les résultats réellement obtenus au fil du travail. `QUESTIONS.md` reçoit les réponses aux questions du professeur ; `ECHECS.md` décrit trois échecs réels de l'IA (demande, résultat, détection, correction de la demande). Ne rien fabriquer ni antidater.
 - Conserver les journaux bruts individuels dans `sessions/<prénom>/`, sans retouche. Ne pas supposer qu'un agent les y exporte automatiquement. Pour chaque tâche autorisée, laisser une trace concise des changements, tests et points ouverts afin de permettre la reprise.

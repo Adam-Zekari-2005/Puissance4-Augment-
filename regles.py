@@ -128,3 +128,52 @@ R5_SANDWICH = {"nom": "R5 Sandwich", "apres_coup": _r5_apres_coup}
 
 # Ordre d'application a l'interieur d'un meme hook : R1 -> R5.
 REGLES = [R1_POP_OUT, R2_JETON_GRIS, R3_CARRE, R4_TROP_ALIGNE, R5_SANDWICH]
+
+
+# --- Messages pour l'interface (lot 3) ----------------------------------------
+# Ne fait pas partie des regles : decrit seulement ce qui s'est passe entre deux
+# etats, en reutilisant les fonctions ci-dessus (rien n'est recode dans jeu.py).
+# Ne modifie aucun etat.
+
+def _nb_gris(etat, c):
+    return sum(1 for ligne in etat["grille"] if ligne[c] == "G")
+
+
+def decrire_coup(avant, apres):
+    """Liste de messages : regles declenchees par le coup qui mene de `avant`
+    a `apres` (Pop out, jeton gris, raison de la fin de partie)."""
+    messages = []
+    joueur = avant["joueur"]
+    coup = apres["coups"][-1]
+    if coup < 0:
+        messages.append(f"R1 Pop out : {joueur} retire son jeton du bas de la "
+                        f"colonne {-coup - 1}, la pile descend d'une case.")
+    for c in range(apres["colonnes"]):
+        if _nb_gris(apres, c) > _nb_gris(avant, c):
+            ligne = next(l for l in range(apres["lignes"]) if apres["grille"][l][c] == "G")
+            messages.append(f"R2 Jeton gris : apres le coup n° {len(apres['coups'])}, "
+                            f"un gris tombe en colonne {c} (ligne {ligne}).")
+
+    if not apres["fini"]:
+        if all(case is not None for case in apres["grille"][0]):
+            messages.append(f"Grille pleine : {apres['joueur']} doit faire un Pop out.")
+        return messages
+
+    for j in ("X", "O"):
+        n = plus_long_alignement(apres["grille"], j)
+        if n >= 5:
+            messages.append(f"R4 Trop aligne : {j} a {n} jetons alignes -> {j} perd.")
+        elif n == 4:
+            messages.append(f"Alignement : {j} aligne 4 jetons.")
+        if _r3_apres_coup(apres, j)["gagne"]:
+            messages.append(f"R3 Carre : {j} forme un carre de 2 x 2.")
+        if _r5_apres_coup(apres, j)["gagne"]:
+            messages.append(f"R5 Sandwich : {j} realise le motif "
+                            f"{j} {j} {_adversaire(j)} {j} {j}.")
+    if not messages or all(m.startswith(("R1", "R2")) for m in messages):
+        if len(apres["coups"]) >= 2 * apres["colonnes"] * apres["lignes"]:
+            messages.append(f"Limite : {len(apres['coups'])} coups joues -> match nul.")
+        else:
+            messages.append(f"Grille pleine et {apres['joueur']} ne peut rien "
+                            f"retirer -> match nul.")
+    return messages

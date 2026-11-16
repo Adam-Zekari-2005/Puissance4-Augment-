@@ -68,3 +68,26 @@ Correction autorisée par l'utilisateur ; diagnostic réalisé, puis périmètre
 - Vérifications : socle 16/16, règlement 21/21 ; contrôle en mémoire de quatre états (vide, empilement X/O, jeton gris après 15 coups, victoire par carré), orientation et absence de mutation. Une assertion du script de contrôle avait une ligne du bas attendue erronée ; corrigée après relecture de la suite, puis contrôle réussi, sans changement du moteur.
 - Moteur, règles, règlement et recette inchangés. Les 26 cas de recette n'ont pas été réexécutés.
 - Point ouvert : le contrat ne fournit pas de journal des déclenchements. Proposition à discuter avec le groupe : une fonction de diagnostic côté moteur/règles qui expose les événements, sans changer les signatures ni les champs imposés. Aucun ajout de contrat ni duplication des règles dans l'interface à cette étape.
+
+## 2026-11-16 — Préparation de la séance 4 (branche `Knoce`, Rayhan)
+
+- Audit complet des séances 1 à 3 avant la séance 4 : socle 16/16, règlement 21/21, aucune divergence entre le code et le règlement v1 hors joueur en fin de partie.
+- `jeu.py` rendu jouable : boucle de saisie, Pop out en `r0`…`r6`, refus via `coups_possibles()`, fin via `gagnant()`, messages des règles déclenchées. Vérifié par des parties simulées au clavier (carré, 5 alignés, sandwich, Pop out gagnant pour l'adversaire, nul simultané, nul au coup 84, saisies invalides) : chaque état final est identique à `rejouer(coups, REGLES)`.
+- `regles.py` : ajout de `decrire_coup(avant, apres)`, fonction de messages pour l'interface. Aucune règle modifiée. Moteur et règlement v1 inchangés.
+- `RECETTE.md` : 7 cas ajoutés (27 à 33), attendus écrits d'après le règlement v1 puis observés. Le cas 27 échoue (joueur `O` après la victoire de X) : premier ✗ réel, à trancher en séance 4.
+- Créés : `sessions/<prénom>/` pour les quatre membres, squelettes `ECHECS.md` et `QUESTIONS.md`. Rien n'y est inventé : prompts, journaux et échecs restent à fournir par chacun.
+- `AGENTS.md` : règle d'équipe « toujours `rejouer(coups, REGLES)` » et description de l'interface.
+
+### Attribution des lots (à compléter par le groupe)
+
+| Lot | Contenu | Responsable |
+|---|---|---|
+| 1 | Moteur standard et point d'accroche | à confirmer |
+| 2 | Les cinq règles | à confirmer |
+| 3 | Interface terminal | Adam ZEKARI |
+| 4 | Recette (puis adversaire, historique) | Adnane BOUCHEHIT |
+
+### Points ouverts pour la séance 4
+1. Joueur après un coup gagnant (cas 27) : trancher dans `REGLEMENT-v2.md`, puis corriger. Si on corrige, retrouver le joueur qui vient de jouer par la parité de `len(coups)` et non par l'adversaire de `joueur`, sinon `gagnant()` casse.
+2. Règles globales : garder la règle d'équipe, ou corriger le moteur après décision du groupe.
+3. Grille pleine sans Pop out possible : aucune suite réelle trouvée, à construire ou à démontrer impossible.
