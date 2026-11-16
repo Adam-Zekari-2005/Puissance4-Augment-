@@ -11,7 +11,7 @@ Vérification par appels Python aux fonctions du moteur, sans interface utilisat
 - Chaque cas repart d'une partie vide. Sauf mention **standard**, utiliser les cinq règles avec `rejouer(coups, REGLES)` ; consulter le résultat avant de changer les règles actives.
 - Colonnes 0 à 6 ; ligne 0 en haut, ligne 5 en bas. Retirer en colonne `c` se note `-(c+1)`.
 - « Puis tenter » signifie : rejouer le préfixe, conserver l'état obtenu, puis appeler `jouer()` avec le coup indiqué. Un refus doit lever `ValueError`, sans modifier l'état, le joueur ou l'historique.
-- `S15`, `S30`, `DOUBLE`, `PLEINE`, `L84` sont les listes exactes définies plus bas ; `[:n]` signifie leurs n premiers coups.
+- `S15`, `S30`, `DOUBLE`, `PLEINE`, `L84`, `V84`, `P60`, `N53` sont les listes exactes définies plus bas ; `[:n]` signifie leurs n premiers coups.
 - À la vérification, renseigner l'état ou l'erreur réellement observés et la date dans **Observé**, puis ✓ ou ✗. Laisser ces colonnes vides tant que le cas n'a pas été vérifié dans cette campagne. Une partie en cours signifie `gagnant(...) == None` et `fini == False`.
 - Les attentes sont à relire en groupe ; un écart doit être expliqué, pas effacé en adaptant l'attendu au code. Ne pas modifier la v1 remise au professeur.
 
@@ -60,12 +60,19 @@ Ce contrôle s'ajoute aux 26 cas historiques ; la campagne complète des 26 cas 
 
 ## Cas d'interaction ajoutés
 
-Attendus écrits à partir de `REGLEMENT-v1.md` (Règle 3 cas limite, interaction « 3 et 4 », priorité 2 de `APRES_COUP`), avant toute exécution du cas.
+Attendus écrits à partir de `REGLEMENT-v1.md` (cas limites des règles, section « Interactions déclarées », tableau de priorités de `APRES_COUP`), avant toute exécution de chaque cas.
 
 | N° | Règle / objectif | Coups joués / procédure | Attendu | Observé | ✓/✗ | Écrit le |
 |---|---|---|---|---|---|---|
 | 28 | R3 + R4 : carré et cinq alignés au même coup | `[2,0,3,1,0,4,1,5,3,6,4,5,2]` ; contrôler aussi le préfixe de 12 coups | Après 12 coups : ligne 4 `X X . X X O .`, ligne 5 `O O X X O O O`, aucun gris, partie en cours. Après le 13e coup (X en `[4][2]`) : cinq X en ligne 4 (colonnes 0–4) et carré X `[4][2]`, `[4][3]`, `[5][2]`, `[5][3]`. R4 passe avant : X perd, **O gagne**, `fini=True`, joueur X conservé, historique de 13 coups. | 16/11/2026 : après 12 coups, ligne 4 `X X . X X O .`, ligne 5 `O O X X O O O`, aucun gris, gagnant None, fini=False, joueur X. Après 13 coups : ligne 4 `X X X X X O .` ; gagnant O, fini=True, joueur X, 13 coups. Préfixe inchangé ; `rejouer` donne le même état. | ✓ | 16/11/2026 |
 | 29 | R3 + R5 : carré et sandwich au même coup | `[2,0,3,1,4,5,0,2,1,6,3,5,4]` ; contrôler aussi le préfixe de 12 coups | Après 12 coups : ligne 4 `X X O X . O .`, ligne 5 `O O X X X O O`, aucun gris, partie en cours. Après le 13e coup (X en `[4][4]`) : sandwich X en ligne 4 (`X X O X X`, colonnes 0–4) et carré X `[4][3]`, `[4][4]`, `[5][3]`, `[5][4]` ; aucun alignement de cinq. Pas de conflit (priorité 5) : **X gagne**, `fini=True`, joueur X conservé, historique de 13 coups. | 16/11/2026 : après 12 coups, ligne 4 `X X O X . O .`, ligne 5 `O O X X X O O`, aucun gris, gagnant None, fini=False, joueur X. Après 13 coups : ligne 4 `X X O X X O .` ; gagnant X, fini=True, joueur X, 13 coups. Préfixe inchangé ; `rejouer` donne le même état. | ✓ | 16/11/2026 |
+| 30 | R1 + R4 : deux défaites simultanées après un Pop out | `[0,1,2,0,3,2,1,3,4,1,6,4,6,-2]` ; contrôler aussi le préfixe de 13 coups | Après 13 coups : ligne 3 `. O . . . . .`, ligne 4 `O X O O O . X`, ligne 5 `X O X X X . X`, aucun gris, partie en cours, à O de jouer. Après le 14e coup (O retire en colonne 1) : ligne 4 `O O O O O . X`, ligne 5 `X X X X X . X` ; les deux joueurs ont cinq alignés. Priorité 1 : **match nul**, `fini=True`, joueur O conservé, historique de 14 coups. | 16/11/2026 : après 13 coups, lignes 3–5 conformes, aucun gris, gagnant None, fini=False, joueur O. Après 14 coups : ligne 3 vide, ligne 4 `O O O O O . X`, ligne 5 `X X X X X . X` ; résultat nul, fini=True, joueur O, 14 coups, aucun gris. Préfixe inchangé ; `rejouer` donne le même état. | ✓ | 16/11/2026 |
+| 31 | Q8 — R2 + R3 : le 15e coup fait gagner, aucun gris | `[0,6,6,6,6,6,6,3,3,3,1,3,0,3,1]` ; contrôler aussi le préfixe de 14 coups | Après 14 coups : ligne 4 `X . . X . . X`, ligne 5 `X X . O . . O`, aucun gris, partie en cours, à X de jouer. Après le 15e coup (X en `[4][1]`) : carré X `[4][0]`, `[4][1]`, `[5][0]`, `[5][1]` ; **X gagne**, `fini=True` ; **aucun gris** sur la grille ; joueur X conservé, historique de 15 coups. | 16/11/2026 : après 14 coups, ligne 4 `X . . X . . X`, ligne 5 `X X . O . . O`, aucun gris, gagnant None, fini=False, joueur X. Après 15 coups : ligne 4 `X X . X . . X` ; gagnant X, fini=True, joueur X, 15 coups, 0 gris sur la grille. Préfixe inchangé ; `rejouer` donne le même état. | ✓ | 16/11/2026 |
+| 32 | Q7 — R1 + R2 : un Pop out retire le jeton sous un gris | `[1,6,6,6,6,6,6,3,3,3,3,3,3,0,5,0,-2]`, puis tenter `-2` ; contrôler aussi le préfixe de 15 coups | Après 15 coups : gris en `[4][1]` au-dessus du X en `[5][1]`, partie en cours. Après 17 coups (X retire en colonne 1) : gris descendu en `[5][1]`, `[4][1]` vide, ligne 5 `O G . O . X O`, un seul gris, partie en cours, à O de jouer, 17 coups. Puis `-2` absent des coups possibles de O ; tenter `-2` lève `ValueError`, état inchangé. | 16/11/2026 : après 15 coups, G en [4][1] et X en [5][1], gagnant None, fini=False. Après 17 coups : ligne 5 `O G . O . X O`, [4][1] vide, 1 gris, gagnant None, fini=False, joueur O, 17 coups. Coups possibles de O : [0,1,2,4,5,-1,-4,-7], sans -2 ; ValueError : coup illegal : -2 ; état inchangé ; `rejouer` donne le même état. | ✓ | 16/11/2026 |
+| 33 | Q2 — R1 + R3 : le 84e coup fait gagner | `V84` ; contrôler aussi `V84[:83]` | Après 83 coups : partie en cours, à O de jouer ; lignes 3 `O X . O . G .` et 4 `X O . O O O X`. Après le 84e coup (O en `[3][4]`) : carré O `[3][3]`, `[3][4]`, `[4][3]`, `[4][4]`. La victoire passe avant la limite de 84 coups : **O gagne** (pas de match nul), `fini=True`, joueur O conservé, historique de 84 coups. | 16/11/2026 : après 83 coups, lignes 3 et 4 conformes, gagnant None, fini=False, joueur O. Après 84 coups : ligne 3 `O X . O O G .` ; gagnant O (pas nul), fini=True, joueur O, 84 coups. Préfixe inchangé ; `rejouer` donne le même état. | ✓ | 16/11/2026 |
+| 34 | Q3 — R2 : gris dus alors que les colonnes 1, 3 et 5 sont pleines | `P60` ; contrôler les états après 15, 30, 45 et 60 coups | Coup 15 (1er gris, vise la colonne 1) : colonne 1 pleine, le gris va en colonne 3. Coups 30 et 45 : colonnes 1, 3 et 5 pleines, **aucun gris** posé ; toujours un seul gris sur la grille. Coup 60 (4e gris) : il garde sa colonne prévue `[1,3,5][(4-1) % 3]` = **colonne 1**, et tombe en `[1][1]` alors que la colonne 5 est libre ; deux gris au total. Partie en cours à chaque étape ; à X de jouer après 60 coups. | 16/11/2026 : 14 coups, aucun gris ; 15 coups, colonne 1 pleine, gris en [2][3]. 29 et 30 coups : colonnes 1, 3, 5 pleines, un seul gris (descendu en [4][3] par un retrait). 44 et 45 coups : colonnes pleines, un seul gris (en [5][3]). 59 coups : colonnes 1 et 5 libres ; 60 coups : nouveau gris en [1][1], deux gris au total. Gagnant None et fini=False à chaque étape ; joueur X après 60 coups. `rejouer` égal à la suite d'appels à `jouer`. | ✓ | 16/11/2026 |
+| 35 | Q6 — R1 + R2 : grille pleine, le joueur suivant n'a aucun jeton en bas | `N53` ; contrôler aussi `N53[:52]` | Après 52 coups : partie en cours, à X de jouer, seule la case `[0][3]` est vide ; ligne 5 `X X X G X X X`. Après le 53e coup (X en `[0][3]`) : grille pleine, aucun alignement de quatre, carré ni sandwich ; O n'a aucun jeton sur la ligne du bas, il ne peut ni poser ni retirer : **match nul**, `fini=True`, aucun coup possible. Le nul est vérifié à `FIN_DE_TOUR`, après le passage de main : joueur **O** ; historique de 53 coups. | 16/11/2026 : après 52 coups, seule [0][3] vide, ligne 5 `X X X G X X X`, gagnant None, fini=False, joueur X. Après 53 coups : aucune case vide ; résultat nul, fini=True, joueur O, 53 coups, coups possibles []. Préfixe inchangé ; `rejouer` donne le même état. | ✓ | 16/11/2026 |
+| 36 | R4 + R5 (+ R1) : sandwich et cinq alignés au même coup | `[6,2,2,3,-7,0,3,0,5,4,1,0,6,1,5,4,0,5,-7,1,5,3,5,2,6,0,3,-4]` ; contrôler aussi le préfixe de 27 coups | Après 27 coups : partie en cours, à O de jouer, gris en `[3][1]`. Après le 28e coup (O retire en colonne 3) : sandwich O en ligne 4 (`O O X O O`, colonnes 0–4) et cinq O en diagonale `[1][0]`, `[2][1]`, `[3][2]`, `[4][3]`, `[5][4]`. La Règle 4 passe avant : O perd, **X gagne**, `fini=True`, joueur O conservé, historique de 28 coups. | 16/11/2026 : après 27 coups, G en [3][1], gagnant None, fini=False, joueur O. Après 28 coups : ligne 4 `O O X O O X .`, diagonale O de [1][0] à [5][4] ; gagnant X, fini=True, joueur O, 28 coups. Préfixe inchangé ; `rejouer` donne le même état. | ✓ | 16/11/2026 |
 
 ## Suites longues reprises des tests existants
 
@@ -85,14 +92,29 @@ PLEINE = [4,0,0,6,4,3,0,3,2,1,0,0,3,1,3,2,0,2,3,2,5,3,2,4,2,
 L84 = S30 + [-4,-7,3,5,4,-6,-5,2,0,-3,3,2,-1,-3,2,2,6,3,-7,5,
              5,4,-3,-3,2,-5,-3,0,6,-1,-7,0,5,-1,2,5,4,5,-5,0,
              -3,2,6,-3,-7,-1,4,2,-5,-3,4,6,2,-7]
+
+V84 = [3,5,3,0,4,3,1,3,3,2,1,5,3,-1,1,1,1,6,-4,3,6,2,-5,0,0,4,5,-5,-2,0,
+       6,5,2,1,6,-3,-4,3,2,-6,0,0,-2,0,-2,1,1,-7,5,-3,-7,-4,6,6,-3,4,-3,-6,
+       -7,-4,3,5,-6,-5,-4,3,-7,4,-7,-5,2,5,-3,-7,4,4,-5,4,6,2,-7,6,6,4]
+
+P60 = [5,1,1,3,5,1,5,5,1,5,3,1,1,5,3,3,3,-4,3,2,-6,2,5,2,-4,3,2,6,4,2,
+       -5,6,2,6,6,0,6,-1,6,4,-4,3,0,-7,0,-5,-1,-2,-6,-7,-2,-7,4,5,-7,6,-6,0,6,-6]
+
+N53 = [4,2,4,0,0,3,6,2,4,0,1,1,6,1,6,6,1,6,2,5,2,6,5,2,1,-1,2,5,0,-4,
+       5,4,4,4,0,5,0,0,5,-6,5,-3,3,3,-7,2,6,-3,2,3,-7,6,3]
 ```
+
+`V84`, `P60` et `N53` ont été trouvées le 16/11/2026 par un script de recherche écrit d'après le règlement v1, indépendant de `moteur.py` et `regles.py` (hors dépôt) ; les attendus des cas 33, 34 et 35 viennent des décisions Q2, Q3 et Q6 de `QUESTIONS.md`, pas du moteur. La suite du cas 36 a été trouvée par le même script ; son attendu vient de l'interaction « 4 et 5 » du règlement v1.
 
 ## Couverture à compléter
 
-Cette première version contient 26 cas et au moins un déclenchement et un non-déclenchement/refus pour chacune des cinq règles. Elle ne couvre pas encore toutes les interactions et tous les cas limites :
+État au 16/11/2026 : 36 cas, tous conformes (le cas 27 a d'abord échoué, puis été corrigé). Chaque règle a au moins un déclenchement et un non-déclenchement ou refus. Les cas 28 à 36 couvrent les interactions R3/R4, R3/R5, R4/R5, la double défaite après Pop out, la descente d'un gris après retrait, l'absence de gris quand le 15e coup finit la partie, les colonnes cibles pleines, la grille pleine sans Pop out possible et la victoire au 84e coup ; ils servent aussi de démonstrations à `QUESTIONS.md`.
 
-- Priorités R3/R4, R4/R5 et victoire simultanée R3/R5 ; deux défaites simultanées après Pop out.
-- Gris interrompant explicitement les motifs de R3/R4/R5, descente d'un gris après retrait ; absence de gris lorsqu'un coup multiple de 15 finit la partie ; trois colonnes cibles pleines.
-- Grille pleine sans Pop out possible ; motifs verticaux/diagonaux non gagnants pour R5 et centre gris.
+Restent sans cas dédié (décisions du règlement inchangées) :
 
-Compléter ou regrouper les cas avec le groupe pour respecter la couverture demandée (chaque interaction déclarée et chaque cas limite), tout en visant 20 à 30 cas. Ne pas considérer le nombre de lignes comme une preuve de couverture. L'ordre du changement de joueur au coup terminal est corrigé et vérifié par le cas 27 : voir `SUIVI.md`.
+- « 2 et 3/4/5 » : gris au milieu d'un motif (`P P G P P`, carré ou alignement coupé par un gris) ; arrivée d'un gris qui remplit la dernière case.
+- « 4 et base » : un même coup forme un alignement de 4 et un autre de 5 ou plus.
+- « 5 et pose », variante nulle : le poseur complète le sandwich adverse et gagne aussi (une suite existe dans `test_reglement.py`).
+- Cas limites de R5 non couverts : motifs verticaux et diagonaux, qui ne doivent pas faire gagner.
+
+Selon l'enseignant (séance 4), dépasser 30 cas est possible sans abuser. Ne pas considérer le nombre de lignes comme une preuve de couverture. L'ordre du changement de joueur au coup terminal est corrigé et vérifié par le cas 27 : voir `SUIVI.md`.
