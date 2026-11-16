@@ -85,14 +85,14 @@ def jouer(etat, colonne):
 
     nouvel["coups"] = etat["coups"] + [colonne]
     nouvel["tour"] = etat["tour"] + 1
-    nouvel["joueur"] = _adversaire(etat["joueur"])  # change apres CHAQUE coup accepte
 
     # Hook 3 — APRES_COUP : la partie est-elle finie (victoire / defaite) ?
     if _resultat_victoire(nouvel) is not None:
         nouvel["fini"] = True
         return nouvel
 
-    # Hook 4 — FIN_DE_TOUR : la main est passee ; evenements automatiques (gris).
+    # Hook 4 — FIN_DE_TOUR : passage de main, puis evenements automatiques (gris).
+    nouvel["joueur"] = _adversaire(etat["joueur"])
     for regle in REGLES_ACTIVES:
         if "fin_de_tour" in regle:
             nouvel = regle["fin_de_tour"](nouvel)
@@ -182,8 +182,10 @@ def _resultat_victoire(etat):
     """
     if not etat["coups"]:
         return None
-    a = _adversaire(etat["joueur"])  # le joueur qui vient de jouer
-    b = etat["joueur"]
+    # X commence ; chaque coup accepte (retrait compris) alterne les joueurs.
+    # L'historique identifie le dernier joueur avant ET apres FIN_DE_TOUR.
+    a = "X" if len(etat["coups"]) % 2 else "O"
+    b = _adversaire(a)
     avis = {}
     for joueur in (a, b):
         gagne = plus_long_alignement(etat["grille"], joueur) >= 4

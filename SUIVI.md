@@ -1,5 +1,40 @@
 # Suivi du projet
 
+## 2026-11-16 — Correction du joueur terminal
+
+- Correction autorisée : `jouer` passe la main à `FIN_DE_TOUR` uniquement après la vérification des victoires/défaites. `_resultat_victoire` identifie le dernier joueur par la parité de l'historique, valable avant et après le passage de main puisque X commence et chaque action acceptée compte un coup.
+- Signatures, forme de l'état, compteur de tours et règlement v1 inchangés. Les nuls de fin de tour restent évalués après le passage de main ; un nul par victoires simultanées arrête avant celui-ci.
+- Ajout de `test_fin_partie.py` : trois tests, dont six scénarios terminaux (X, O, défaite, sandwich adverse, retrait et mode standard), avec immutabilité, rejeu et refus après fin ; continuation et nul de fin de tour. Tous passent avec Python Windows et `-B`.
+- Contrôles en mémoire des suites `DOUBLE`, `L84`, `S15` et `PLEINE` lus dans la recette : résultats, joueurs, immutabilité et rejeu conformes. Socle **16/16**, règles **21/21** ; fichiers de ces tests inchangés. Cas 27 désormais conforme, échec initial conservé. Les 26 cas historiques n'ont pas tous été réexécutés.
+- Erreur réelle dans le nouveau test : la première suite prévue pour une victoire de O faisait déjà gagner X par carré au coup précédent. Le refus du moteur était correct ; remplacement des coups de X pour éviter ce carré, puis test réussi. Aucun changement de moteur pour contourner cet échec.
+- Documentation actualisée dans `AGENTS.md` et `RECETTE.md`. Les autres limites de couverture et de règles globales restent ouvertes. Aucun commit ni push.
+
+## 2026-11-16 — Diagnostic du joueur terminal
+
+- Étape autorisée : vérifier l'écart et préparer sa correction avec un cas de recette. Moteur et règlement inchangés.
+- Cas 27 ajouté dans `RECETTE.md` : après `[0,6,1,6,0,5,1]`, résultat X et fini=True, mais joueur O ; le règlement arrête pourtant le traitement avant le passage de main. Le préfixe de six coups donne bien joueur X, sans gagnant.
+- Contrôle complémentaire : `[6,0,6,1,5,3,6,4,2]` fait gagner O par sandwich après une pose de X ; le joueur terminal doit donc rester le poseur X, pas nécessairement le gagnant.
+- Correction proposée : déplacer le changement de joueur dans `FIN_DE_TOUR`, après la vérification des victoires/défaites. Vérifier aussi l'identification du dernier joueur dans `_resultat_victoire`, qui suppose actuellement que la main a déjà changé. Préserver les signatures et la forme de l'état ; ne pas modifier le règlement.
+- Après autorisation de la correction : contrôler victoire, défaite, victoire adverse, nul simultané, continuation et nul de fin de tour ; vérifier immutabilité et rejeu, puis relancer les 16 tests du socle et les 21 tests des règles.
+- Diagnostic exécuté avec Python Windows et `-B`. Premier lancement inaccessible dans le bac à sable, puis exécution autorisée réussie. Aucun test des suites existantes relancé à cette étape ; aucun commit ni push.
+
+## 2026-11-16 — Lot 3, messages des règles
+
+- Ajout autorisé de `decrire_evenements(avant, coup, apres)` dans `regles.py`, appelée par `jeu.py` après chaque coup accepté avec les cinq règles actives. Réutilisation des fonctions de détection des règles et de l'alignement du moteur.
+- Messages pour Pop out, apparition d'un gris, carré, cinq alignés, sandwich et causes de match nul. Les motifs sont décrits puis les priorités sont précisées, le résultat final étant fourni par `gagnant`.
+- Contrôles ciblés réussis sur suites connues pour chaque règle, double victoire et limite de 84 coups. Contrôles sur états construits réussis pour gris déplacé par retrait, carré avec cinq alignés et deux défaites simultanées. Les états reçus restent identiques après description.
+- Trois lancements complets de `jeu.py` avec entrées simulées vérifient les messages et résultats pour carré, sandwich adverse et match nul au coup 84. Socle 16/16 et règlement 21/21 réussis.
+- Cette fonction décrit les cinq règles du projet et suppose un coup accepté reliant les deux états. Les contrôles de motifs simultanés sur états construits complètent les essais de parties et sont distingués ici pour leur traçabilité.
+- Modifications locales sur `adnane`, en attente de publication demandée par l'utilisateur. La couverture de recette et l'écart concernant le joueur terminal restent documentés.
+
+## 2026-11-16 — Lot 3, saisie et partie complète
+
+- Étape autorisée sur `adnane` après récupération de l'affichage d'Adam. `jeu.py` active les cinq règles, accepte les entiers de pose et retrait, consulte `coups_possibles`, applique `jouer`, réaffiche la grille et annonce le résultat de `gagnant`.
+- Saisie incorrecte ou coup interdit entraînent une nouvelle demande. Fin d'entrée ou Ctrl+C interrompent proprement la saisie.
+- Contrôles par lancement réel de `jeu.py` avec entrées simulées réussis pour saisies invalides puis carré gagnant, Pop out puis fin d'entrée, cinq alignés faisant gagner O, et partie complète de 84 coups avec gris et retraits aboutissant au match nul. Les 16 tests du socle et 21 tests des règles passent.
+- Une assertion du script de contrôle sur « Partie terminée. » a échoué à cause de l'encodage PowerShell du caractère accentué. Vérification corrigée avec une séquence Unicode, puis réussie. Aucun défaut du jeu associé à cet échec de contrôle.
+- Les messages détaillés indiquant quelle règle se déclenche restent une étape distincte, comme prévu dans le suivi d'Adam. Règlement, moteur et règles conservés. Aucun push pour cette étape à ce stade.
+
 ## 2026-11-13 — Intégration de la base du groupe
 
 Tâche autorisée : reprendre la base fournie dans `Travailler IA.zip` sur une branche dédiée, sans corriger le code ni développer de nouvelles fonctionnalités.
