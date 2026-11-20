@@ -1,5 +1,69 @@
 # Suivi du projet
 
+## 2026-11-20 — Rédaction des échecs à partir des traces disponibles
+
+- À la demande de l’utilisateur, `ECHECS.md` rédigé à partir des traces du projet.
+  Comparaison du moteur entre `3e3bf44` et `9f8556d`, et vérification
+  des incidents de test et de couverture dans le suivi conservé en Git.
+- Trois entrées avec quatre rubriques : demandes clairement reconstituées,
+  faits documentés, détection et précisions de demande rétrospectives proposées.
+  Aucune formulation proposée n’est présentée comme réellement envoyée à l’époque.
+- Limites conservées : attribution IA du moteur initial non vérifiable dans le
+  dépôt, suite erronée initiale et première rédaction de couverture non conservées.
+  Aucun changement du code, du règlement ou des résultats de recette.
+
+## 2026-11-20 — Séance 5, campagne complète de recette
+
+- Travail demandé : finaliser la recette, puis documenter les trois échecs réels de l’IA.
+- Ajout des cas 37–43 : gris dans un alignement/sandwich, gris dans un carré,
+  dernière case remplie par un gris avec Pop out encore possible, quatre et cinq
+  alignés simultanés, double victoire après pose, sandwich vertical et diagonal
+  non gagnants. Les attendus sont issus du règlement v2, écrits avant l’exécution
+  des nouvelles suites sur le moteur. La suite 41 vient du test existant et n’est
+  pas présentée comme une nouvelle découverte.
+- Recherche des six autres suites par un script indépendant sans import du moteur
+  ni des règles, à partir de préfixes existants ; motifs inspectés avant comparaison.
+  Scripts de travail conservés hors dépôt dans `../tmp/recherche_recette.py`,
+  `../tmp/verifier_recette.py` ; résultats dans `../tmp/resultats_recette.json`.
+- Campagne réelle, cas 01 à 43 dans l’ordre : **43 conformes, 0 échec actuel**.
+  Vérification des résultats et des conditions propres à chaque cas, refus de coups,
+  immutabilité, rejeu identique (hors cas 03 : dimensions standard différentes,
+  contrôlé par appels à jouer), comparaison des grilles augmentées avec la simulation
+  indépendante et contrôles des préfixes. Observations historiques conservées,
+  nouvelles observations datées du 20/11 ; échec initial du cas 27 toujours visible.
+- Ces observations sont obtenues par exécution Python de Codex et doivent être
+  relues par le groupe : elles ne sont pas présentées comme des saisies manuelles.
+  Tableau de correspondance des 18 lignes d’interactions ajouté à la recette.
+  Les mentions de couverture restantes dans la v2 décrivent l’état de séance 4 ;
+  le règlement remis est conservé et la couverture actuelle figure dans la recette.
+- `ECHECS.md` créé avec trois incidents documentés. Le dépôt et les sessions Codex
+  locales liées au projet des 13 et 16 novembre ont été examinés.
+  Les demandes sont présentées comme des reconstitutions ; aucun journal brut retouché.
+- Incident de préparation : une écriture via un pipe PowerShell a remplacé des
+  accents dans la nouvelle section de recette ; encodage réparé avant livraison,
+  sans changer le sens des attendus. Aucun défaut du moteur découvert pendant cette
+  campagne. Moteur, règles, règlements et tests existants inchangés dans cette étape.
+
+## 2026-11-20 — Séance 5, outils du lot 4
+
+- Mise en œuvre autorisée après lecture du PDF de séance 5 et analyse du dossier.
+- `jeu.py` : menu deux joueurs / humain X contre ordinateur O / rejeu / quitter.
+  L'ordinateur tire au hasard parmi `coups_possibles`, retraits compris.
+  La commande `h` affiche la liste des coups sans avancer la partie ; historique
+  également affiché en fin de partie et à l'interruption.
+- Rejeu : lecture d'une liste JSON d'entiers, refus des booléens et autres types,
+  appel de `rejouer(coups, REGLES)`, affichage de la grille, du résultat et des coups.
+  Saisie invalide ou coup illégal : refus et nouvelle demande. Aucun code saisi exécuté.
+- `test_lot4.py` : quatre tests réussis, dont 30 parties complètes simulées avec
+  graines fixes pour le contrôle ; chaque état final est identique à son rejeu.
+  Contrôles des saisies, retrait illégal, carré gagnant et historique sans coup.
+- Tests existants : socle 16/16, règles 21/21, fin de partie 3/3.
+  Lancement réel du terminal avec entrées simulées : menu invalide, rejeu avec
+  retrait, partie complète à deux et sortie réussis. `git diff --check` réussi.
+- README actualisé. Moteur, règles, règlements et recette inchangés.
+  La campagne complète de recette et `ECHECS.md` restent à traiter séparément ;
+  ces tests du lot 4 ne remplacent pas les cas du cahier. Aucun commit ni push.
+
 ## 2026-11-16 — Recette, cas 30 (R1 + R4), préparation séance 4
 
 - Réalisé par Claude Code sur `adnane`, après publication de la séance 3 dans `main` (`28cabfe`).
